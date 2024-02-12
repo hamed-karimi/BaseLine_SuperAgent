@@ -24,8 +24,9 @@ class Train:
         # check_env(environment)
 
     def train_policy(self):
-        vec_env = make_vec_env(Environment, n_envs=self.batch_size, env_kwargs=dict(params=self.params,
-                                                                       few_many_objects=['few', 'many']))
+        vec_env = make_vec_env(Environment, n_envs=self.batch_size,
+                               env_kwargs=dict(params=self.params,
+                                               few_many_objects=['few', 'many']))
         vec_env = VecMonitor(venv=vec_env, filename=self.log_dir)
         policy_kwargs = dict(activation_fn=torch.nn.ReLU,
                              net_arch=dict(pi=self.policy_net_size,
@@ -45,4 +46,4 @@ class Train:
 
         # model = A2C("MlpPolicy", vec_env, verbose=0)
         model.learn(self.episode_num, callback=self.call_back, tb_log_name=self.res_folder)
-        model.save(self.res_folder)
+        model.save(os.path.join(self.res_folder, 'model'))
