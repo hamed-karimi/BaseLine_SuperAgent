@@ -1,14 +1,12 @@
 import os.path
-import gymnasium as gym
-from stable_baselines3.common.env_checker import check_env
-from stable_baselines3.common.vec_env import VecMonitor
-from stable_baselines3 import A2C, PPO
-from types import SimpleNamespace
-import json
-from Environment import Environment
+
 import torch
+from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.vec_env import VecMonitor
+
 from CallBack import CallBack
+from Environment import Environment
 
 
 class Train:
@@ -36,7 +34,12 @@ class Train:
         model = PPO("MlpPolicy",
                     vec_env,
                     policy_kwargs=policy_kwargs,
+                    learning_rate=self.params.LEARNING_RATE,
+                    gamma=self.params.GAMMA,
+                    batch_size=self.params.BATCH_SIZE,
                     verbose=1,
+                    n_steps=1,
+                    n_epochs=1,
                     tensorboard_log='./runs',
                     device='auto')
 
