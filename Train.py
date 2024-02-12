@@ -34,7 +34,7 @@ class Train:
         model = PPO("MlpPolicy",
                     vec_env,
                     policy_kwargs=policy_kwargs,
-                    learning_rate=self.params.LEARNING_RATE,
+                    learning_rate=self.params.INIT_LEARNING_RATE,
                     gamma=self.params.GAMMA,
                     batch_size=self.params.BATCH_SIZE,
                     verbose=1,
