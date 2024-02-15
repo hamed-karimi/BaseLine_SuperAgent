@@ -40,7 +40,7 @@ class Environment(gym.Env):
         ))
         self.action_space = spaces.MultiDiscrete([self.height, self.width])
 
-    def sample(self):  # A dictionary with the same key and sampled values from :attr:`self.spaces`
+    def sample(self):  # return size: ndarray (198, )
         self._env_map = np.zeros_like(self._env_map, dtype=int)
         self._init_random_map()
         self._init_random_mental_states()
@@ -145,12 +145,7 @@ class Environment(gym.Env):
         else:
             self.each_type_object_num = object_num_on_map
         object_num_to_init = self.each_type_object_num - object_num_already_on_map
-        # temp_object_locations = -1 * np.ones((self.each_type_object_num.sum(), 3), dtype=int)
-        # self.object_locations = -1 * np.ones((self.each_type_object_num.sum(), 3), dtype=int)  # (object_type, x, y)
-        # self.object_locations = dict()
-        # for obj_type in range(self.object_type_num):
-        #     if not obj_type in self.object_locations.keys():
-        #         self.object_locations[obj_type] = []
+
         object_count = 0
         for obj_type in range(self.object_type_num):
             for at_obj in range(object_num_to_init[obj_type]):
@@ -183,3 +178,14 @@ class Environment(gym.Env):
         return np.random.uniform(low=attr_range[0],
                                  high=attr_range[1],
                                  size=(size,))
+
+    def init_environment_for_test(self, agent_location, mental_states, mental_states_slope, object_reward): # mental_states_parameters
+        self._env_map[0, :, :] = 0  # np.zeros_like(self._env_map[0, :, :], dtype=int)
+        self._env_map[0, agent_location[0], agent_location[1]] = 1
+        self._init_random_map()
+        object_locations = np.argwhere(self._env_map[1:, :, :])
+        self._mental_states = np.array(mental_states)
+        # self._environment_states_parameters = [self._mental_states_slope, self._environment_object_reward]
+        self._environment_states_parameters[0] = np.array(mental_states_slope)
+        self._environment_states_parameters[1] = np.array(object_reward)
+        return self._env_map, self._flatten_observation(), object_locations, self.each_type_object_num
