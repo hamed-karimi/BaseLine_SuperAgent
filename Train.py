@@ -5,6 +5,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecMonitor
 from FeatureExtractor import FeatureExtractor
 from CallBack import CallBack
+from stable_baselines3.common.callbacks import CheckpointCallback
 from Environment import Environment
 from ActorCritic import Policy
 
@@ -20,7 +21,7 @@ class Train:
         self.device = 'auto'
         self.res_folder = utils.make_res_folder()
         self.log_dir = os.path.join(self.res_folder, 'log')
-        self.call_back = CallBack(log_freq=self.params.PRINT_REWARD_FREQ, )
+        self.tensorboard_call_back = CallBack(log_freq=self.params.PRINT_REWARD_FREQ, )
         # environment = Environment(params, ['many', 'many'])
         # check_env(environment)
 
@@ -29,27 +30,18 @@ class Train:
                                env_kwargs=dict(params=self.params,
                                                few_many_objects=['few', 'many']))
         vec_env = VecMonitor(venv=vec_env, filename=self.log_dir)
-        # policy_kwargs = dict(activation_fn=torch.nn.ReLU,
-        #                      net_arch=dict(pi=self.policy_net_size,
-        #                                    vf=self.value_net_size))
-        # # Create the agent
-        # model = PPO("MlpPolicy",
-        #             vec_env,
-        #             policy_kwargs=policy_kwargs,
-        #             learning_rate=self.params.INIT_LEARNING_RATE,
-        #             gamma=self.params.GAMMA,
-        #             batch_size=self.params.BATCH_SIZE,
-        #             verbose=1,
-        #             n_steps=1,
-        #             n_epochs=1,
-        #             tensorboard_log='./runs',
-        #             device='auto')
+        checkpoint_callback = CheckpointCallback(
+            save_freq=self.params.CHECKPOINT_SAVE_FREQUENCY,
+            save_path=self.res_folder,
+            name_prefix="PPO",
+            save_replay_buffer=False,
+            save_vecnormalize=False,
+        )
 
         policy_kwargs = dict(
             features_extractor_class=FeatureExtractor,
             features_extractor_kwargs=dict(features_dim=256),
         )
-        # model = PPO(Policy, vec_env, verbose=1, policy_kwargs=policy_kwargs)
         model = PPO(Policy,
                     vec_env,
                     policy_kwargs=policy_kwargs,
@@ -61,8 +53,8 @@ class Train:
                     n_epochs=1,
                     tensorboard_log='./runs',
                     device=self.device)
-        # model.learn(5000)
 
-        # model.predict()
-        model.learn(self.episode_num, callback=self.call_back, tb_log_name=self.res_folder)
+        model.learn(self.episode_num,
+                    callback=[self.tensorboard_call_back, checkpoint_callback],
+                    tb_log_name=self.res_folder)
         model.save(os.path.join(self.res_folder, 'model'))
