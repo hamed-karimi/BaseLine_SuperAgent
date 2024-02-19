@@ -93,17 +93,10 @@ class Test:
 
     def next_agent_and_environment(self):
         for object_reward in self.all_object_rewards:
-            episode_object_amount = [np.random.choice(['few', 'many']) for _ in range(self.object_type_num)]
             for mental_state_slope in self.all_mental_states_change:
-                pre_located_objects_location = [[[]]] * self.object_type_num
-                pre_located_objects_num = torch.zeros((self.object_type_num,), dtype=torch.int32)
-                prohibited_object_locations = []
-                for subplot_id, mental_state in enumerate(self.all_mental_states):
-                    # pre_assigned_object_reward = [[]] * params.OBJECT_TYPE_NUM
-                    # pre_located_agent = [[]]
-                    # pre_assigned_mental_states = [[]]
+                environment = Environment(self.params, ['few', 'many'])
 
-                    environment = Environment(self.params, ['few', 'many'])
+                for subplot_id, mental_state in enumerate(self.all_mental_states):
                     for i in range(self.height):
                         for j in range(self.width):
                             env, flat_env, object_locations, each_type_object_num = environment.init_environment_for_test(

@@ -182,7 +182,10 @@ class Environment(gym.Env):
     def init_environment_for_test(self, agent_location, mental_states, mental_states_slope, object_reward): # mental_states_parameters
         self._env_map[0, :, :] = 0  # np.zeros_like(self._env_map[0, :, :], dtype=int)
         self._env_map[0, agent_location[0], agent_location[1]] = 1
-        self._init_random_map()
+        each_type_object_num = None
+        if hasattr(self, 'each_type_object_num'):
+            each_type_object_num = self.each_type_object_num
+        self._init_random_map(each_type_object_num)
         object_locations = np.argwhere(self._env_map[1:, :, :])
         self._mental_states = np.array(mental_states)
         # self._environment_states_parameters = [self._mental_states_slope, self._environment_object_reward]
