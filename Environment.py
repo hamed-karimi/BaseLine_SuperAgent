@@ -1,5 +1,5 @@
+import math
 import random
-
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
@@ -38,8 +38,9 @@ class Environment(gym.Env):
              spaces.Box(self.params.ENVIRONMENT_OBJECT_REWARD_RANGE[0], self.params.ENVIRONMENT_OBJECT_REWARD_RANGE[1],
                         shape=(self.object_type_num,), dtype=float)]  # 'environment_object_reward'
         ))
-        self.action_space = spaces.MultiDiscrete([self.height, self.width])
-
+        # self.action_space = spaces.MultiDiscrete([self.height, self.width])
+        self.action_space = spaces.Box(-2**63, 2**63 - 2,
+                                       shape=(self.params.WIDTH*self.params.HEIGHT, ), dtype=float)
     def sample(self):  # return size: ndarray (198, )
         self._env_map = np.zeros_like(self._env_map, dtype=int)
         self._init_random_map()
@@ -55,10 +56,8 @@ class Environment(gym.Env):
 
         return sample_observation, dict()
 
-    def step(self, goal_location):
-        # print(goal_location)
-        # (observation, reward, terminated, truncated, info)
-
+    def step(self, goal_values):
+        goal_location = self.get_goal_location_from_values(values=goal_values)
         steps = self.controller.get_shortest_path_to_object(np.expand_dims(self._agent_location, axis=0),
                                                             np.expand_dims(goal_location, axis=0))
         if self._env_map[1:, goal_location[0], goal_location[1]].sum() == 0:
@@ -88,6 +87,13 @@ class Environment(gym.Env):
 
     def render(self):
         return None
+
+    def get_goal_location_from_values(self, values):
+        goal_values = values.reshape(self.params.HEIGHT, self.params.WIDTH)
+        object_mask = self._env_map.sum(axis=0) > 0
+        goal_values[~object_mask] = -math.inf
+        goal_location = np.array(np.unravel_index(goal_values.argmax(), goal_values.shape))
+        return goal_location
 
     def _flatten_observation(self):
         observation = [self._env_map.flatten(), self._mental_states.flatten()]

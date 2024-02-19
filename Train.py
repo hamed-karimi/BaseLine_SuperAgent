@@ -48,7 +48,7 @@ class Train:
                     learning_rate=self.params.INIT_LEARNING_RATE,
                     gamma=self.params.GAMMA,
                     batch_size=self.params.BATCH_SIZE,
-                    verbose=1,
+                    verbose=0,
                     n_steps=self.step_num,
                     n_epochs=1,
                     tensorboard_log='./runs',

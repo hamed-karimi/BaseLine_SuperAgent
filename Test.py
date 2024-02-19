@@ -1,3 +1,5 @@
+import math
+
 from stable_baselines3 import PPO
 import os
 import torch
@@ -91,6 +93,13 @@ class Test:
         shape_map[key] = '.'
         return shape_map
 
+    def get_goal_location_from_values(self, env_map, values):
+        goal_values = values.reshape(self.params.HEIGHT, self.params.WIDTH)
+        object_mask = env_map.sum(axis=0) > 0
+        goal_values[~object_mask] = -math.inf
+        goal_location = np.array(np.unravel_index(goal_values.argmax(), goal_values.shape))
+        return goal_location
+
     def next_agent_and_environment(self):
         for object_reward in self.all_object_rewards:
             for mental_state_slope in self.all_mental_states_change:
@@ -141,7 +150,8 @@ class Test:
             shape_map = self.get_object_shape_dictionary(object_locations, agent_location, each_type_object_num)
 
             with torch.no_grad():
-                goal_location = self.model.predict(observation=flat_environment, deterministic=False)[0]
+                goal_values = self.model.predict(observation=flat_environment, deterministic=False)[0]
+                goal_location = self.get_goal_location_from_values(env_map=environment, values=goal_values)
 
             if tuple(goal_location.tolist()) in shape_map.keys():
                 # which_goal[agent_location[0], agent_location[1]] = shape_map[tuple(goal_location.tolist())]

@@ -19,7 +19,7 @@ class FeatureExtractor(BaseFeaturesExtractor):
         # Re-ordering will be done by pre-preprocessing or wrapper
         self.width = 8
         self.height = 8
-        self.n_input_channels = 3 # observation_space.shape[0]
+        self.n_input_channels = 3  # observation_space.shape[0]
         self.cnn = nn.Sequential(
             nn.Conv2d(in_channels=self.n_input_channels, out_channels=64, kernel_size=2),
             nn.ReLU(),
@@ -31,21 +31,26 @@ class FeatureExtractor(BaseFeaturesExtractor):
         )
 
         # Compute shape by doing one forward pass
-        # with th.no_grad():
-        #     n_flatten = self.cnn(
-        #         th.as_tensor(observation_space.sample()[None]).float()
-        #     ).shape[1]
+        with th.no_grad():
+            x = observation_space.sample()[None]
+            env = x[:, :self.n_input_channels * 64].reshape(1,
+                                                            self.n_input_channels,
+                                                            self.height, self.width)
+            n_flatten = self.cnn(
+                th.as_tensor(env).float()
+            ).shape[1]
 
-        self.linear = nn.Sequential(nn.Linear(576, features_dim), nn.ReLU())
+        self.linear = nn.Sequential(nn.Linear(n_flatten, features_dim), nn.ReLU())
 
     def forward(self, observations: th.Tensor) -> th.Tensor:
         batch_size = observations.shape[0]
-        env = observations[:, :self.n_input_channels*64].reshape(batch_size,
-                                                                 self.n_input_channels,
-                                                                 self.height, self.width) # double check the reshape here
+        env = observations[:, :self.n_input_channels * 64].reshape(batch_size,
+                                                                   self.n_input_channels,
+                                                                   self.height,
+                                                                   self.width)  # double-check the reshape here
         env_repr = self.cnn(env)
         env_repr = self.linear(env_repr)  # env_repr.shape: [64, 576]
-        parameters = observations[:, self.n_input_channels*64:]
+        parameters = observations[:, self.n_input_channels * 64:]
         features = th.concatenate([env_repr, parameters], dim=1)
         return features
 

@@ -34,14 +34,18 @@ class ActorCritic(nn.Module):
         # Policy network
         self.policy_net = nn.Sequential(
             nn.Linear(feature_dim, 256), nn.ReLU(),
-            nn.Linear(256, 128), nn.ReLU(),
-            nn.Linear(128, last_layer_dim_pi), nn.ReLU()
+            nn.Linear(256, 196), nn.ReLU(),
+            nn.Linear(196, 128), nn.ReLU(),
+            nn.Linear(128, 84), nn.ReLU(),
+            nn.Linear(84, last_layer_dim_pi), nn.ReLU()
         )
         # Value network
         self.value_net = nn.Sequential(
             nn.Linear(feature_dim, 256), nn.ReLU(),
-            nn.Linear(256, 128), nn.ReLU(),
-            nn.Linear(128, last_layer_dim_vf), nn.ReLU()
+            nn.Linear(256, 196), nn.ReLU(),
+            nn.Linear(196, 128), nn.ReLU(),
+            nn.Linear(128, 84), nn.ReLU(),
+            nn.Linear(84, last_layer_dim_vf), nn.ReLU()
         )
 
     def forward(self, features: th.Tensor) -> Tuple[th.Tensor, th.Tensor]:
@@ -49,6 +53,7 @@ class ActorCritic(nn.Module):
         :return: (th.Tensor, th.Tensor) latent_policy, latent_value of the specified network.
             If all layers are shared, then ``latent_policy == latent_value``
         """
+        # Two additional linear layers (probably without ReLU) are also attached to the last layer specified here
         return self.forward_actor(features), self.forward_critic(features)  # features: (64, 262)
 
     def forward_actor(self, features: th.Tensor) -> th.Tensor:
