@@ -1,6 +1,6 @@
 import os.path
 import torch
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, A2C
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecMonitor
 from FeatureExtractor import FeatureExtractor
@@ -18,7 +18,7 @@ class Train:
         self.episode_num = self.params.EPISODE_NUM
         self.batch_size = self.params.BATCH_SIZE
         self.step_num = self.params.EPISODE_STEPS
-        self.device = 'auto'
+        self.device = self.params.DEVICE
         self.res_folder = utils.make_res_folder()
         self.log_dir = os.path.join(self.res_folder, 'log')
         self.tensorboard_call_back = CallBack(log_freq=self.params.PRINT_REWARD_FREQ, )
@@ -33,7 +33,7 @@ class Train:
         checkpoint_callback = CheckpointCallback(
             save_freq=self.params.CHECKPOINT_SAVE_FREQUENCY,
             save_path=self.res_folder,
-            name_prefix="PPO",
+            name_prefix="A2C",
             save_replay_buffer=False,
             save_vecnormalize=False,
         )
@@ -42,15 +42,13 @@ class Train:
             features_extractor_class=FeatureExtractor,
             features_extractor_kwargs=dict(features_dim=256),
         )
-        model = PPO(Policy,
+        model = A2C(Policy,
                     vec_env,
                     policy_kwargs=policy_kwargs,
                     learning_rate=self.params.INIT_LEARNING_RATE,
                     gamma=self.params.GAMMA,
-                    batch_size=self.params.BATCH_SIZE,
                     verbose=0,
                     n_steps=self.step_num,
-                    n_epochs=1,
                     tensorboard_log='./runs',
                     device=self.device)
 
