@@ -41,6 +41,7 @@ class Environment(gym.Env):
         # self.action_space = spaces.MultiDiscrete([self.height, self.width])
         self.action_space = spaces.Box(-2**63, 2**63 - 2,
                                        shape=(self.params.WIDTH*self.params.HEIGHT, ), dtype=float)
+
     def sample(self):  # return size: ndarray (198, )
         self._env_map = np.zeros_like(self._env_map, dtype=int)
         self._init_random_map()
@@ -52,11 +53,13 @@ class Environment(gym.Env):
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         self._env_map = np.zeros_like(self._env_map, dtype=int)
+        self._goal_selection_step = 0
         sample_observation = self.sample()
 
         return sample_observation, dict()
 
     def step(self, goal_values):
+        self._goal_selection_step += 1
         goal_location = self.get_goal_location_from_values(values=goal_values)
         steps = self.controller.get_shortest_path_to_object(np.expand_dims(self._agent_location, axis=0),
                                                             np.expand_dims(goal_location, axis=0))
@@ -81,9 +84,13 @@ class Environment(gym.Env):
             step_reward = mental_states_reward - step_length - mental_states_cost
             reward += step_reward
 
-        terminated = True  # be careful about this, we might need to try to have always (or after 5 goal selection step) terminated=False, and just maximize the reward.
+        terminated = False  # be careful about this, we might need to try to have always (or after 5 goal selection step) terminated=False, and just maximize the reward.
+        if self._goal_selection_step == self.params.EPISODE_STEPS:
+            truncated = True
+        else:
+            truncated = False
         # (observation, reward, terminated, truncated, info)
-        return self._flatten_observation(), reward, terminated, False, dict()
+        return self._flatten_observation(), reward, terminated, truncated, dict()
 
     def render(self):
         return None

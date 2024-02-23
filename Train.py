@@ -33,7 +33,7 @@ class Train:
         checkpoint_callback = CheckpointCallback(
             save_freq=self.params.CHECKPOINT_SAVE_FREQUENCY,
             save_path=self.res_folder,
-            name_prefix="A2C",
+            name_prefix="PPO",
             save_replay_buffer=False,
             save_vecnormalize=False,
         )
@@ -42,7 +42,7 @@ class Train:
             features_extractor_class=FeatureExtractor,
             features_extractor_kwargs=dict(features_dim=256),
         )
-        model = A2C(Policy,
+        model = PPO(Policy,
                     vec_env,
                     policy_kwargs=policy_kwargs,
                     learning_rate=self.params.INIT_LEARNING_RATE,
