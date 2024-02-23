@@ -85,7 +85,7 @@ class Environment(gym.Env):
             reward += step_reward
 
         terminated = False  # be careful about this, we might need to try to have always (or after 5 goal selection step) terminated=False, and just maximize the reward.
-        if self._goal_selection_step == self.params.EPISODE_STEPS:
+        if self._goal_selection_step == self.params.EPISOD_STEPS:
             truncated = True
         else:
             truncated = False
