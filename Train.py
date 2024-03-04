@@ -26,7 +26,7 @@ class Train:
         # check_env(environment)
 
     def train_policy(self):
-        vec_env = make_vec_env(Environment, n_envs=self.batch_size,
+        vec_env = make_vec_env(Environment, n_envs=self.params.ENVIRONMENT_NUM,
                                env_kwargs=dict(params=self.params,
                                                few_many_objects=['few', 'many']))
         vec_env = VecMonitor(venv=vec_env, filename=self.log_dir)
@@ -42,8 +42,8 @@ class Train:
             features_extractor_class=FeatureExtractor,
             features_extractor_kwargs=dict(features_dim=256),
         )
-        model = PPO(Policy,
-                    vec_env,
+        model = PPO(policy=Policy,
+                    env=vec_env,
                     policy_kwargs=policy_kwargs,
                     learning_rate=self.params.INIT_LEARNING_RATE,
                     batch_size=self.batch_size,
