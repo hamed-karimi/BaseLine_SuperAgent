@@ -46,9 +46,11 @@ class Train:
                     vec_env,
                     policy_kwargs=policy_kwargs,
                     learning_rate=self.params.INIT_LEARNING_RATE,
+                    batch_size=self.batch_size,
                     gamma=self.params.GAMMA,
                     verbose=0,
                     n_steps=self.step_num,
+                    n_epochs=1,
                     tensorboard_log='./runs',
                     device=self.device)
 

@@ -61,22 +61,21 @@ class Environment(gym.Env):
     def step(self, goal_values):
         self._goal_selection_step += 1
         goal_location = self.get_goal_location_from_values(values=goal_values)
-        steps = self.controller.get_shortest_path_to_object(np.expand_dims(self._agent_location, axis=0),
-                                                            np.expand_dims(goal_location, axis=0))
-        if self._env_map[1:, goal_location[0], goal_location[1]].sum() == 0:
+        steps = self.controller.get_action(np.expand_dims(self._agent_location, axis=0),
+                                           np.expand_dims(goal_location, axis=0))
+        if self._env_map[:, goal_location[0], goal_location[1]].sum() == 0:
             reward = -1 * self.cost_of_non_object_location
         else:
             reward = 0
         for step in steps:
-            # left_location = self._agent_location.copy()
             self._update_agent_locations(step)
             step_length = np.linalg.norm(step)
             dt = np.array(1) if step_length < 1.4 else step_length
-            mental_states_cost = self._total_positive_mental_states() * dt
             object_reward = self._env_map[1:, self._agent_location[0], self._agent_location[1]] * self._environment_object_reward
             self._update_object_locations()
 
             self._update_mental_state_after_step(dt=dt)
+            mental_states_cost = self._total_positive_mental_states()
             positive_mental_states_before_reward = self._total_positive_mental_states()
             self._update_mental_states_after_object(u=object_reward)
             positive_mental_states_after_reward = self._total_positive_mental_states()
@@ -84,11 +83,12 @@ class Environment(gym.Env):
             step_reward = mental_states_reward - step_length - mental_states_cost
             reward += step_reward
 
-        terminated = False  # be careful about this, we might need to try to have always (or after 5 goal selection step) terminated=False, and just maximize the reward.
-        if self._goal_selection_step == self.params.EPISODE_STEPS:
-            truncated = True
-        else:
-            truncated = False
+        truncated = False
+        terminated = True  # be careful about this, we might need to try to have always (or after 5 goal selection step) terminated=False, and just maximize the reward.
+        # if self._goal_selection_step == self.params.EPISODE_STEPS:
+        #     truncated = True
+        # else:
+        #     truncated = False
         # (observation, reward, terminated, truncated, info)
         return self._flatten_observation(), reward, terminated, truncated, dict()
 
@@ -131,8 +131,15 @@ class Environment(gym.Env):
         self._mental_states += dz
 
     def _update_mental_states_after_object(self, u):  # u > 0
+        mental_states_threshold = np.empty_like(self._mental_states)
+        for i, state in enumerate(self._mental_states):
+            if state < self._no_reward_threshold:
+                mental_states_threshold[i] = state
+            else:
+                mental_states_threshold[i] = self._no_reward_threshold
+
         self._mental_states += -(1 * u)
-        self._mental_states = np.maximum(self._mental_states, self._no_reward_threshold)
+        self._mental_states = np.maximum(self._mental_states, mental_states_threshold)
 
     def _init_object_num_on_map(self) -> np.array:
         # e.g., self.few_many_objects : ['few', 'many']

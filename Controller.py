@@ -98,7 +98,5 @@ class Controller:
         actions = self.get_shortest_path_to_object(source_location, target_location)
         if len(actions) > 0:
             return actions
-            # return torch.tensor([self.action_id_dict[str(actions[0])]]) # .to(self.device)
         else:
-            return self.all_actions[0]
-            # return np.zeros((1,), dtype=int)#torch.tensor([0])# .to(self.device)  # staying
+            return np.expand_dims(self.all_actions[0], axis=0)

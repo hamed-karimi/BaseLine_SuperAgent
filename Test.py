@@ -194,11 +194,11 @@ class Test:
                 ax[r, c].set(adjustable='box')
             if (setting_id + 1) % (col_num * row_num * self.width * self.height) == 0:
                 plt.tight_layout(pad=0.1, w_pad=6, h_pad=1)
-                fig.savefig('{0}/or_{1}-{2}_msChange_{3}-{4}.png'.format(self.res_folder,
-                                                                         env_parameters[1][0],
-                                                                         env_parameters[1][1],
-                                                                         env_parameters[2][0],
-                                                                         env_parameters[2][1]))
+                fig.savefig('{0}/slope_{1}-{2}_or_{3}-{4}.png'.format(self.res_folder,
+                                                                      env_parameters[1][0],
+                                                                      env_parameters[1][1],
+                                                                      env_parameters[2][0],
+                                                                      env_parameters[2][1]))
                 plt.close()
 
     def load_model(self):
