@@ -31,7 +31,7 @@ class Environment(gym.Env):
             # Usually, it will not be possible to use elements of this space directly in learning code. However, you can easily convert Dict observations to flat arrays by using a gymnasium.wrappers.FlattenObservation wrapper
             [spaces.Box(0, 1, shape=(1 + self.object_type_num,
                                      self.height, self.width), dtype=int),  # 'env_map'
-             spaces.Box(self.params.INITIAL_MENTAL_STATES_RANGE[0], 2**63 - 2,
+             spaces.Box(self.params.INITIAL_MENTAL_STATES_RANGE[0], 2 ** 63 - 2,
                         shape=(self.object_type_num,), dtype=float),  # 'mental_states'
              spaces.Box(self.params.MENTAL_STATES_SLOPE_RANGE[0], self.params.MENTAL_STATES_SLOPE_RANGE[1],
                         shape=(self.object_type_num,), dtype=float),  # 'mental_states_slope'
@@ -39,8 +39,8 @@ class Environment(gym.Env):
                         shape=(self.object_type_num,), dtype=float)]  # 'environment_object_reward'
         ))
         # self.action_space = spaces.MultiDiscrete([self.height, self.width])
-        self.action_space = spaces.Box(-2**63, 2**63 - 2,
-                                       shape=(self.params.WIDTH*self.params.HEIGHT, ), dtype=float)
+        self.action_space = spaces.Box(-2 ** 63, 2 ** 63 - 2,
+                                       shape=(self.params.WIDTH * self.params.HEIGHT,), dtype=float)
 
     def sample(self):  # return size: ndarray (198, )
         self._env_map = np.zeros_like(self._env_map, dtype=int)
@@ -71,7 +71,9 @@ class Environment(gym.Env):
             self._update_agent_locations(step)
             step_length = np.linalg.norm(step)
             dt = np.array(1) if step_length < 1.4 else step_length
-            object_reward = self._env_map[1:, self._agent_location[0], self._agent_location[1]] * self._environment_object_reward
+            object_reward = self._env_map[1:,
+                                          self._agent_location[0],
+                                          self._agent_location[1]] * self._environment_object_reward
             self._update_object_locations()
 
             self._update_mental_state_after_step(dt=dt)
@@ -79,7 +81,8 @@ class Environment(gym.Env):
             positive_mental_states_before_reward = self._total_positive_mental_states()
             self._update_mental_states_after_object(u=object_reward)
             positive_mental_states_after_reward = self._total_positive_mental_states()
-            mental_states_reward = np.maximum(0, positive_mental_states_before_reward - positive_mental_states_after_reward)
+            mental_states_reward = np.maximum(0,
+                                              positive_mental_states_before_reward - positive_mental_states_after_reward)
             step_reward = mental_states_reward - step_length - mental_states_cost
             reward += step_reward
 
@@ -115,12 +118,12 @@ class Environment(gym.Env):
         self._env_map[0, self._agent_location[0], self._agent_location[1]] = 1
 
     def _update_object_locations(self):
-        if self._env_map[1:, self._agent_location[0], self._agent_location[1]].sum() == 0: # not reached an object
+        if self._env_map[1:, self._agent_location[0], self._agent_location[1]].sum() == 0:  # not reached an object
             return
         reached_object_type = np.argwhere(self._env_map[1:, self._agent_location[0], self._agent_location[1]])[0, 0]
         self.each_type_object_num[reached_object_type] += 1
         self._init_random_map(object_num_on_map=self.each_type_object_num)  # argument is kind of redundant
-        self._env_map[reached_object_type+1, self._agent_location[0], self._agent_location[1]] = 0
+        self._env_map[reached_object_type + 1, self._agent_location[0], self._agent_location[1]] = 0
         self.each_type_object_num[reached_object_type] -= 1
 
     def _total_positive_mental_states(self):
@@ -187,20 +190,25 @@ class Environment(gym.Env):
         for i in range(len(self._environment_states_parameters_range)):
             self._environment_states_parameters[i][:] = self._get_random_vector(
                 attr_range=self._environment_states_parameters_range[i],
-                prob_equal=self.params.PROB_EQUAL_PARAMETERS)
+                prob_equal=self.params.PROB_EQUAL_PARAMETERS,
+                only_positive=True)
 
-    def _get_random_vector(self, attr_range, prob_equal=0):
+    def _get_random_vector(self, attr_range, prob_equal=0, only_positive=False):
         p = random.uniform(0, 1)
         if p <= prob_equal:
             size = 1
         else:
             size = self.object_type_num
 
-        return np.random.uniform(low=attr_range[0],
-                                 high=attr_range[1],
-                                 size=(size,))
+        random_vec = np.random.uniform(low=attr_range[0],
+                                       high=attr_range[1],
+                                       size=(size,))
+        if only_positive:
+            random_vec = np.abs(random_vec)
+        return random_vec
 
-    def init_environment_for_test(self, agent_location, mental_states, mental_states_slope, object_reward): # mental_states_parameters
+    def init_environment_for_test(self, agent_location, mental_states, mental_states_slope,
+                                  object_reward):  # mental_states_parameters
         self._env_map[0, :, :] = 0  # np.zeros_like(self._env_map[0, :, :], dtype=int)
         self._env_map[0, agent_location[0], agent_location[1]] = 1
         each_type_object_num = None

@@ -29,33 +29,23 @@ class Controller:
         # self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.height = height
         self.width = width
-        # self.all_actions = np.array([[0, 0],
-        #                              [1, 0], [-1, 0], [0, 1], [0, -1]])
-
         self.all_actions = np.array([[0, 0],
-                                     [1, 0], [-1, 0], [0, 1], [0, -1],
-                                     [1, 1], [-1, -1], [-1, 1], [1, -1]])
+                                     [1, 0], [-1, 0], [0, 1], [0, -1]])
+
+        # self.all_actions = np.array([[0, 0],
+        #                              [1, 0], [-1, 0], [0, 1], [0, -1],
+        #                              [1, 1], [-1, -1], [-1, 1], [1, -1]])
 
         # self.action_id_dict = {str(self.all_actions[i]): i for i in range(self.all_actions.shape[0])}
 
     def get_node_neighbours(self, x, y):
         neighbours = []
-        if x - 1 >= 0:
-            neighbours.append([x - 1, y])
-            if y - 1 >= 0:
-                neighbours.append([x - 1, y - 1])
-            if y + 1 < self.width:
-                neighbours.append([x - 1, y + 1])
-        if x + 1 < self.height:
-            neighbours.append([x + 1, y])
-            if y - 1 >= 0:
-                neighbours.append([x + 1, y - 1])
-            if y + 1 < self.width:
-                neighbours.append([x + 1, y + 1])
-        if y - 1 >= 0:
-            neighbours.append([x, y - 1])
-        if y + 1 < self.width:
-            neighbours.append([x, y + 1])
+        loc = np.array([x, y])
+        for action in self.all_actions:
+            if np.all(action == np.array([0, 0])):
+                continue
+            if np.all(loc + action >= 0) and np.all(loc + action < [self.height, self.width]):
+                neighbours.append(loc + action)
 
         return neighbours
 
