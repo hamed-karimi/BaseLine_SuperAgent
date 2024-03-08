@@ -25,8 +25,8 @@ class FeatureExtractor(BaseFeaturesExtractor):
             nn.ReLU(),
             nn.Conv2d(64, 64, kernel_size=3),
             nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3),
-            nn.ReLU(),
+            # nn.Conv2d(64, 64, kernel_size=3),
+            # nn.ReLU(),
             nn.Flatten(),
         )
 
