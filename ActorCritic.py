@@ -4,8 +4,9 @@ from gymnasium import spaces
 import torch as th
 from torch import nn
 
-from stable_baselines3 import PPO
-from stable_baselines3.common.policies import ActorCriticPolicy
+# from stable_baselines3 import PPO
+# from stable_baselines3.common.policies import ActorCriticPolicy
+from sbx.ppo.policies import PPOPolicy
 
 
 class ActorCritic(nn.Module):
@@ -61,7 +62,7 @@ class ActorCritic(nn.Module):
         return self.value_net(features)
 
 
-class Policy(ActorCriticPolicy):
+class Policy(PPOPolicy):
     def __init__(
             self,
             observation_space: spaces.Space,
@@ -71,7 +72,7 @@ class Policy(ActorCriticPolicy):
             **kwargs,
     ):
         # Disable orthogonal initialization
-        kwargs["ortho_init"] = False
+        # kwargs["ortho_init"] = False
         super().__init__(
             observation_space,
             action_space,

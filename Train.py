@@ -1,7 +1,8 @@
 import os.path
 import torch
-from stable_baselines3 import PPO, A2C
+# from stable_baselines3 import PPO, A2C
 from stable_baselines3.common.env_util import make_vec_env
+from sbx import PPO
 from stable_baselines3.common.vec_env import VecMonitor
 from FeatureExtractor import FeatureExtractor
 from CallBack import CallBack

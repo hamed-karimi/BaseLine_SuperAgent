@@ -1,7 +1,8 @@
 import math
 
-from stable_baselines3 import PPO
+# from stable_baselines3 import PPO
 import os
+from sbx import PPO
 import torch
 import numpy as np
 import itertools
@@ -13,9 +14,11 @@ def get_predefined_parameters(num_object, param_name):
     if param_name == 'all_mental_states':
         all_param = [[-10, -5, 0, 5, 10]] * num_object
     elif param_name == 'all_object_rewards':
-        all_param = [[0, 4, 8, 12, 16, 20]] * num_object
+        # all_param = [[0, 4, 8, 12, 16, 20]] * num_object
+        all_param = [[0, 8, 12, 20]] * num_object
     elif param_name == 'all_mental_states_change':
-        all_param = [[0, 1, 2, 3, 4, 5]] * num_object
+        # all_param = [[0, 1, 2, 3, 4, 5]] * num_object
+        all_param = [[0, 1, 3, 5]] * num_object
     else:
         print('no such parameters')
         return
@@ -36,11 +39,11 @@ class Test:
         self.width = utils.params.WIDTH
         self.object_type_num = utils.params.OBJECT_TYPE_NUM
         # self.episode_num = utils.params.META_CONTROLLER_EPISODE_NUM
-        self.all_actions = torch.tensor([[0, 0],
-                                         [1, 0], [-1, 0], [0, 1], [0, -1],
-                                         [1, 1], [-1, -1], [-1, 1], [1, -1]])
-        self.action_mask = np.zeros((self.height, self.width, 1, len(self.all_actions)))
-        self.initialize_action_masks()
+        # self.all_actions = torch.tensor([[0, 0],
+        #                                  [1, 0], [-1, 0], [0, 1], [0, -1],
+        #                                  [1, 1], [-1, -1], [-1, 1], [1, -1]])
+        # self.action_mask = np.zeros((self.height, self.width, 1, len(self.all_actions)))
+        # self.initialize_action_masks()
 
         self.all_mental_states = get_predefined_parameters(self.object_type_num, 'all_mental_states')
         self.all_object_rewards = get_predefined_parameters(self.object_type_num, 'all_object_rewards')
@@ -52,29 +55,29 @@ class Test:
         # self.row_num = 5
         # self.col_num = 6
 
-    def initialize_action_masks(self):
-        for i in range(self.height):
-            for j in range(self.width):
-                agent_location = torch.tensor([[i, j]])
-                aa = np.ones((agent_location.size(0), len(self.all_actions)))
-                for ind, location in enumerate(agent_location):
-                    if location[0] == 0:
-                        aa[ind, 2] = 0
-                        aa[ind, 6] = 0
-                        aa[ind, 7] = 0
-                    if location[0] == self.height - 1:
-                        aa[ind, 1] = 0
-                        aa[ind, 5] = 0
-                        aa[ind, 8] = 0
-                    if location[1] == 0:
-                        aa[ind, 4] = 0
-                        aa[ind, 6] = 0
-                        aa[ind, 8] = 0
-                    if location[1] == self.width - 1:
-                        aa[ind, 3] = 0
-                        aa[ind, 5] = 0
-                        aa[ind, 7] = 0
-                self.action_mask[i, j, :, :] = aa
+    # def initialize_action_masks(self):
+    #     for i in range(self.height):
+    #         for j in range(self.width):
+    #             agent_location = torch.tensor([[i, j]])
+    #             aa = np.ones((agent_location.size(0), len(self.all_actions)))
+    #             for ind, location in enumerate(agent_location):
+    #                 if location[0] == 0:
+    #                     aa[ind, 2] = 0
+    #                     aa[ind, 6] = 0
+    #                     aa[ind, 7] = 0
+    #                 if location[0] == self.height - 1:
+    #                     aa[ind, 1] = 0
+    #                     aa[ind, 5] = 0
+    #                     aa[ind, 8] = 0
+    #                 if location[1] == 0:
+    #                     aa[ind, 4] = 0
+    #                     aa[ind, 6] = 0
+    #                     aa[ind, 8] = 0
+    #                 if location[1] == self.width - 1:
+    #                     aa[ind, 3] = 0
+    #                     aa[ind, 5] = 0
+    #                     aa[ind, 7] = 0
+    #             self.action_mask[i, j, :, :] = aa
 
     def get_figure_title(self, mental_states):
         title = '$n_{0}: {1:.2f}'.format('{' + self.objects_color_name[0] + '}', mental_states[0])
@@ -150,7 +153,7 @@ class Test:
             shape_map = self.get_object_shape_dictionary(object_locations, agent_location, each_type_object_num)
 
             with torch.no_grad():
-                goal_values = self.model.predict(observation=flat_environment, deterministic=False)[0]
+                goal_values = self.model.predict(observation=flat_environment, deterministic=True)[0]
                 goal_location = self.get_goal_location_from_values(env_map=environment, values=goal_values)
 
             if tuple(goal_location.tolist()) in shape_map.keys():
