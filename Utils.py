@@ -27,6 +27,9 @@ class Utils:
         elif not os.path.exists(dirname):
             os.makedirs(dirname)
 
+        runs_dir = os.path.join(root_dir, 'runs')
+        if not os.path.exists(runs_dir):
+            os.mkdir(runs_dir)
         self.res_folder = dirname
         shutil.copy('./Parameters.json', self.res_folder)
         return dirname, folder
