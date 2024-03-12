@@ -1,4 +1,6 @@
 import os.path
+import shutil
+
 import torch
 from stable_baselines3 import A2C
 from stable_baselines3.common.env_util import make_vec_env
@@ -14,22 +16,22 @@ from ActorCritic import Policy
 class Train:
     def __init__(self, utils):
         self.params = utils.params
+        self.root_dir = self.params.STORE_DIR
         self.policy_net_size = self.params.POLICY_NET_SIZE
         self.value_net_size = self.params.VALUE_NET_SIZE
         self.episode_num = self.params.EPISODE_NUM
         self.batch_size = self.params.BATCH_SIZE
         self.step_num = self.params.EPISODE_STEPS
         self.device = self.params.DEVICE
-        self.res_folder = utils.make_res_folder()
+        self.res_folder, self.res_name = utils.make_res_folder(root_dir=self.root_dir)
         self.log_dir = os.path.join(self.res_folder, 'log')
         self.tensorboard_call_back = CallBack(log_freq=self.params.PRINT_REWARD_FREQ, )
-
 
     def train_policy(self):
         vec_env = make_vec_env(Environment, n_envs=self.params.ENVIRONMENT_NUM,
                                env_kwargs=dict(params=self.params,
                                                few_many_objects=['few', 'many']),
-                               vec_env_cls=SubprocVecEnv)
+                               vec_env_cls=DummyVecEnv)
         #SubprocVecEnv
         # vec_env = VecMonitor(venv=vec_env, filename=self.log_dir)
         # "Tried to reset an environment before done. If you want to allow early resets, "
@@ -55,7 +57,7 @@ class Train:
                     verbose=0,
                     n_steps=self.step_num,
                     # n_epochs=1,
-                    tensorboard_log='./runs',
+                    tensorboard_log='{0}/runs'.format(self.root_dir),
                     device=self.device)
 
         if self.params.PRE_TRAINED_MODEL_VERSION != "":
@@ -64,4 +66,9 @@ class Train:
         model.learn(self.episode_num,
                     callback=[self.tensorboard_call_back, checkpoint_callback],
                     tb_log_name=self.res_folder)
+
         model.save(os.path.join(self.res_folder, 'model'))
+        shutil.copytree(self.res_folder, './')
+        if self.root_dir == '/local':
+            shutil.copytree(os.path.join('/local/runs/', self.res_name),
+                            os.path.join('./runs/', self.res_name))
