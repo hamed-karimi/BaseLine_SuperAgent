@@ -5,7 +5,7 @@ import torch as th
 from torch import nn
 
 # from stable_baselines3 import PPO
-# from stable_baselines3.common.policies import ActorCriticPolicy
+from stable_baselines3.common.policies import ActorCriticPolicy
 from sbx.ppo.policies import PPOPolicy
 
 
@@ -62,7 +62,7 @@ class ActorCritic(nn.Module):
         return self.value_net(features)
 
 
-class Policy(PPOPolicy):
+class Policy(ActorCriticPolicy):
     def __init__(
             self,
             observation_space: spaces.Space,

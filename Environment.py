@@ -86,13 +86,13 @@ class Environment(gym.Env):
             step_reward = mental_states_reward - step_length - mental_states_cost
             reward += step_reward
 
-        truncated = False
+        terminated = False
         # be careful about this, we might need to try to have always (or after 5 goal selection step) terminated=False,
         # and just maximize the reward.
         if self._goal_selection_step == self.params.EPISODE_STEPS:
-            terminated = True
+            truncated = True
         else:
-            terminated = False
+            truncated = False
         # (observation, reward, terminated, truncated, info)
         return self._flatten_observation(), reward, terminated, truncated, dict()
 
@@ -100,7 +100,7 @@ class Environment(gym.Env):
         return None
 
     def get_goal_location_from_values(self, values):
-        goal_values = values.reshape(self.params.HEIGHT, self.params.WIDTH)
+        goal_values = values.reshape(self.params.HEIGHT, self.params.WIDTH).copy()
         object_mask = self._env_map.sum(axis=0) > 0
         goal_values[~object_mask] = -math.inf
         goal_location = np.array(np.unravel_index(goal_values.argmax(), goal_values.shape))
