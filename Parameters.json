@@ -19,6 +19,6 @@
     "LEARNING_RATE_DECAY": 0,
     "PRINT_REWARD_FREQ": 1000,
     "TEST_POLICY_NET": true,
-    "STORE_DIR": "/local",
+    "STORE_DIR": "./",
     "PRE_TRAINED_MODEL_VERSION": ""
 }

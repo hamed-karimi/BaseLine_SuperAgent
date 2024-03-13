@@ -57,7 +57,7 @@ class Train:
                     verbose=0,
                     n_steps=self.step_num,
                     # n_epochs=1,
-                    tensorboard_log=format(self.root_dir),
+                    tensorboard_log='./runs',
                     device=self.device)
 
         if self.params.PRE_TRAINED_MODEL_VERSION != "":
@@ -69,6 +69,3 @@ class Train:
 
         model.save(os.path.join(self.res_folder, 'model'))
         shutil.copytree(self.res_folder, './')
-        if self.root_dir == '/local':
-            shutil.copytree(os.path.join('/local/runs/', self.res_name),
-                            os.path.join('./runs/', self.res_name))
