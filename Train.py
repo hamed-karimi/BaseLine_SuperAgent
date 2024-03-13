@@ -57,7 +57,7 @@ class Train:
                     verbose=0,
                     n_steps=self.step_num,
                     # n_epochs=1,
-                    tensorboard_log='{0}/runs/'.format(self.root_dir),
+                    tensorboard_log='{0}/'.format(self.root_dir),
                     device=self.device)
 
         if self.params.PRE_TRAINED_MODEL_VERSION != "":
