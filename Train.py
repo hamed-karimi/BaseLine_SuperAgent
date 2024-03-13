@@ -31,7 +31,8 @@ class Train:
         vec_env = make_vec_env(Environment, n_envs=self.params.ENVIRONMENT_NUM,
                                env_kwargs=dict(params=self.params,
                                                few_many_objects=['few', 'many']),
-                               vec_env_cls=SubprocVecEnv)
+                               vec_env_cls=SubprocVecEnv,
+                               monitor_dir=self.log_dir)
         #SubprocVecEnv
         # vec_env = VecMonitor(venv=vec_env, filename=self.log_dir)
         # "Tried to reset an environment before done. If you want to allow early resets, "
@@ -41,7 +42,7 @@ class Train:
             save_path=self.res_folder,
             name_prefix="A2C",
             save_replay_buffer=False,
-            save_vecnormalize=False,
+            save_vecnormalize=False
         )
 
         policy_kwargs = dict(
