@@ -31,7 +31,7 @@ class Train:
         vec_env = make_vec_env(Environment, n_envs=self.params.ENVIRONMENT_NUM,
                                env_kwargs=dict(params=self.params,
                                                few_many_objects=['few', 'many']),
-                               vec_env_cls=DummyVecEnv)
+                               vec_env_cls=SubprocVecEnv)
         #SubprocVecEnv
         # vec_env = VecMonitor(venv=vec_env, filename=self.log_dir)
         # "Tried to reset an environment before done. If you want to allow early resets, "
@@ -57,7 +57,7 @@ class Train:
                     verbose=0,
                     n_steps=self.step_num,
                     # n_epochs=1,
-                    tensorboard_log='{0}/runs'.format(self.root_dir),
+                    tensorboard_log='{0}/runs/'.format(self.root_dir),
                     device=self.device)
 
         if self.params.PRE_TRAINED_MODEL_VERSION != "":
