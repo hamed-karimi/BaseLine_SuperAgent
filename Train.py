@@ -32,18 +32,20 @@ class Train:
                                env_kwargs=dict(params=self.params,
                                                few_many_objects=['few', 'many']),
                                vec_env_cls=SubprocVecEnv,
-                               monitor_dir=self.log_dir)
+                               # monitor_dir=self.log_dir
+                               )
         #SubprocVecEnv
         # vec_env = VecMonitor(venv=vec_env, filename=self.log_dir)
         # "Tried to reset an environment before done. If you want to allow early resets, "
         # "wrap your env with Monitor(env, path, allow_early_resets=True)"
-        checkpoint_callback = CheckpointCallback(
-            save_freq=self.params.CHECKPOINT_SAVE_FREQUENCY,
-            save_path=self.res_folder,
-            name_prefix="A2C",
-            save_replay_buffer=False,
-            save_vecnormalize=False
-        )
+
+        # checkpoint_callback = CheckpointCallback(
+        #     save_freq=self.params.CHECKPOINT_SAVE_FREQUENCY,
+        #     save_path=self.res_folder,
+        #     name_prefix="A2C",
+        #     save_replay_buffer=False,
+        #     save_vecnormalize=False
+        # )
 
         policy_kwargs = dict(
             features_extractor_class=FeatureExtractor,
@@ -58,7 +60,7 @@ class Train:
                     verbose=0,
                     n_steps=self.step_num,
                     # n_epochs=1,
-                    tensorboard_log='./runs',
+                    tensorboard_log=None, #'./runs',
                     device=self.device)
 
         if self.params.PRE_TRAINED_MODEL_VERSION != "":
@@ -66,7 +68,7 @@ class Train:
 
         print('before learning')
         model.learn(self.episode_num,
-                    callback=[self.tensorboard_call_back, checkpoint_callback],
+                    # callback=[self.tensorboard_call_back, checkpoint_callback],
                     tb_log_name=self.res_folder)
 
         model.save(os.path.join(self.res_folder, 'model'))
