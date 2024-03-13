@@ -31,8 +31,7 @@ class Train:
         vec_env = make_vec_env(Environment, n_envs=self.params.ENVIRONMENT_NUM,
                                env_kwargs=dict(params=self.params,
                                                few_many_objects=['few', 'many']),
-                               vec_env_cls=SubprocVecEnv,
-                               # monitor_dir=self.log_dir
+                               vec_env_cls=SubprocVecEnv
                                )
         #SubprocVecEnv
         # vec_env = VecMonitor(venv=vec_env, filename=self.log_dir)
@@ -68,6 +67,7 @@ class Train:
 
         print('before learning')
         model.learn(self.episode_num,
+                    log_interval=100,
                     # callback=[self.tensorboard_call_back, checkpoint_callback],
                     tb_log_name=self.res_folder)
 
