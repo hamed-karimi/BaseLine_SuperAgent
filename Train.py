@@ -64,6 +64,7 @@ class Train:
         if self.params.PRE_TRAINED_MODEL_VERSION != "":
             model.set_parameters('./{0}/model.zip'.format(self.params.PRE_TRAINED_MODEL_VERSION))
 
+        print('before learning')
         model.learn(self.episode_num,
                     callback=[self.tensorboard_call_back, checkpoint_callback],
                     tb_log_name=self.res_folder)
