@@ -52,6 +52,7 @@ class Train:
             features_extractor_class=FeatureExtractor,
             features_extractor_kwargs=dict(features_dim=256),
         )
+        print('after policy_kwargs')
         model = A2C(policy=Policy,
                     env=vec_env,
                     policy_kwargs=policy_kwargs,
@@ -63,7 +64,7 @@ class Train:
                     # n_epochs=1,
                     tensorboard_log=None, #'./runs',
                     device=self.device)
-
+        print('after model')
         if self.params.PRE_TRAINED_MODEL_VERSION != "":
             model.set_parameters('./{0}/model.zip'.format(self.params.PRE_TRAINED_MODEL_VERSION))
 
