@@ -1,5 +1,8 @@
+import os.path
+
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.logger import TensorBoardOutputFormat
+import numpy as np
 
 
 class CallBack(BaseCallback):
@@ -8,7 +11,7 @@ class CallBack(BaseCallback):
 
     :param verbose: Verbosity level: 0 for no output, 1 for info messages, 2 for debug messages
     """
-    def __init__(self, log_freq=1, verbose: int = 0):
+    def __init__(self, res_dir, log_freq=1, verbose: int = 0):
         super().__init__(verbose)
         # Those variables will be accessible in the callback
         # (they are defined in the base class)
@@ -29,16 +32,19 @@ class CallBack(BaseCallback):
         # to have access to the parent object
         # self.parent = None  # type: Optional[BaseCallback]
         self._log_freq = log_freq
+        self.res_dir = res_dir
+        self.reward_list = []
 
     def _on_training_start(self) -> None:
         """
         This method is called before the first rollout starts.
         """
-        output_formats = self.logger.output_formats
+        # output_formats = self.logger.output_formats
         # Save reference to tensorboard formatter object
         # note: the failure case (not formatter found) is not handled here, should be done with try/except.
-        self.tb_formatter = next(
-            formatter for formatter in output_formats if isinstance(formatter, TensorBoardOutputFormat))
+        # self.tb_formatter = next(
+        #     formatter for formatter in output_formats if isinstance(formatter, TensorBoardOutputFormat))
+        pass
 
     def _on_rollout_start(self) -> None:
         """
@@ -59,14 +65,12 @@ class CallBack(BaseCallback):
         """
 
         # print(self.n_calls, self.training_env.step_wait()[1].mean())
-        if self.n_calls % self._log_freq == 0:
+        # if self.n_calls % self._log_freq == 0:
             # You can have access to info from the env using self.locals.
             # for instance, when using one env (index 0 of locals["infos"]):
             # lap_count = self.locals["infos"][0]["lap_count"]
-            self.tb_formatter.writer.add_scalar("Reward", self.training_env.step_wait()[1].mean(), self.n_calls)
-
-            # self.tb_formatter.writer.add_scalar("Meta Controller/Reward", self.training_env. / params.EPISODE_LEN, episode)
-            # self.tb_formatter.writer.flush()
+            # self.tb_formatter.writer.add_scalar("Reward", self.training_env.step_wait()[1].mean(), self.n_calls)
+        self.reward_list.append(self.training_env.step_wait()[1].mean())
         return True
 
     def _on_rollout_end(self) -> None:
@@ -79,4 +83,4 @@ class CallBack(BaseCallback):
         """
         This event is triggered before exiting the `learn()` method.
         """
-        pass
+        np.save(os.path.join(self.res_dir, 'rewards'), np.array(self.reward_list))
