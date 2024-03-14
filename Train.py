@@ -75,4 +75,4 @@ class Train:
                     tb_log_name=self.res_folder)
 
         model.save(os.path.join(self.res_folder, 'model'))
-        shutil.copytree(self.res_folder, './')
+        shutil.copytree(self.res_folder, os.path.join('./', self.res_name))
