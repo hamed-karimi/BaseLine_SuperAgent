@@ -62,7 +62,7 @@ class Train:
                     verbose=0,
                     n_steps=self.step_num,
                     # n_epochs=1,
-                    tensorboard_log=None,#'./runs',
+                    tensorboard_log='./runs',
                     device=self.device)
         print('after model')
         if self.params.PRE_TRAINED_MODEL_VERSION != "":
@@ -70,7 +70,7 @@ class Train:
 
         print('before learning')
         model.learn(self.episode_num,
-                    log_interval=10000000,
+                    log_interval=100,
                     callback=[self.tensorboard_call_back, checkpoint_callback],
                     tb_log_name=self.res_folder)
 
