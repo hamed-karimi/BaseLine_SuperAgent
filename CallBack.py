@@ -70,7 +70,7 @@ class CallBack(BaseCallback):
             # for instance, when using one env (index 0 of locals["infos"]):
             # lap_count = self.locals["infos"][0]["lap_count"]
             # self.tb_formatter.writer.add_scalar("Reward", self.training_env.step_wait()[1].mean(), self.n_calls)
-        self.reward_list.append(self.training_env.step_wait()[1].mean())
+        # self.reward_list.append(self.training_env.step_wait()[1].mean())
         return True
 
     def _on_rollout_end(self) -> None:
@@ -83,4 +83,5 @@ class CallBack(BaseCallback):
         """
         This event is triggered before exiting the `learn()` method.
         """
-        np.save(os.path.join(self.res_dir, 'rewards'), np.array(self.reward_list))
+        # np.save(os.path.join(self.res_dir, 'rewards'), np.array(self.reward_list))
+        pass

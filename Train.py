@@ -2,9 +2,9 @@ import os.path
 import shutil
 
 import torch
-from stable_baselines3 import A2C
+from stable_baselines3 import A2C, PPO
 from stable_baselines3.common.env_util import make_vec_env
-from sbx import PPO
+# from sbx import PPO
 from stable_baselines3.common.vec_env import VecMonitor, SubprocVecEnv, DummyVecEnv
 from FeatureExtractor import FeatureExtractor
 from CallBack import CallBack
@@ -43,7 +43,7 @@ class Train:
         checkpoint_callback = CheckpointCallback(
             save_freq=self.params.CHECKPOINT_SAVE_FREQUENCY,
             save_path=self.res_folder,
-            name_prefix="A2C",
+            name_prefix="PPO",
             save_replay_buffer=False,
             save_vecnormalize=False
         )
@@ -53,15 +53,15 @@ class Train:
             features_extractor_kwargs=dict(features_dim=256),
         )
         print('after policy_kwargs')
-        model = A2C(policy=Policy,
+        model = PPO(policy=Policy,
                     env=vec_env,
                     policy_kwargs=policy_kwargs,
                     learning_rate=self.params.INIT_LEARNING_RATE,
-                    # batch_size=self.batch_size,
+                    batch_size=self.batch_size,
                     gamma=self.params.GAMMA,
                     verbose=0,
                     n_steps=self.step_num,
-                    # n_epochs=1,
+                    n_epochs=1,
                     tensorboard_log='./runs',
                     device=self.device)
         print('after model')
