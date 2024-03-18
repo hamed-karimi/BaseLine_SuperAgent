@@ -71,8 +71,9 @@ class Train:
         print('before learning')
         model.learn(self.episode_num,
                     log_interval=100,
-                    callback=[self.tensorboard_call_back, checkpoint_callback],
-                    tb_log_name=self.res_folder)
+                    # callback=[self.tensorboard_call_back, checkpoint_callback],
+                    tb_log_name=self.res_name
+                    )
 
         model.save(os.path.join(self.res_folder, 'model'))
-        shutil.copytree(self.res_folder, os.path.join('./', self.res_name))
+        # shutil.copytree(self.res_folder, os.path.join('./', self.res_name))
