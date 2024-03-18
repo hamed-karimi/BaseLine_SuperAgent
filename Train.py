@@ -62,7 +62,7 @@ class Train:
                     verbose=0,
                     n_steps=self.step_num,
                     # n_epochs=1,
-                    tensorboard_log='./runs',
+                    tensorboard_log=None, #'./runs',
                     device=self.device)
         print('after model')
         if self.params.PRE_TRAINED_MODEL_VERSION != "":

@@ -42,9 +42,9 @@ class CallBack(BaseCallback):
         # output_formats = self.logger.output_formats
         # Save reference to tensorboard formatter object
         # note: the failure case (not formatter found) is not handled here, should be done with try/except.
-        # self.tb_formatter = next(
-        #     formatter for formatter in output_formats if isinstance(formatter, TensorBoardOutputFormat))
-        pass
+        self.tb_formatter = next(
+            formatter for formatter in output_formats if isinstance(formatter, TensorBoardOutputFormat))
+        # pass
 
     def _on_rollout_start(self) -> None:
         """
@@ -65,11 +65,11 @@ class CallBack(BaseCallback):
         """
 
         # print(self.n_calls, self.training_env.step_wait()[1].mean())
-        # if self.n_calls % self._log_freq == 0:
+        if self.n_calls % self._log_freq == 0:
             # You can have access to info from the env using self.locals.
             # for instance, when using one env (index 0 of locals["infos"]):
             # lap_count = self.locals["infos"][0]["lap_count"]
-            # self.tb_formatter.writer.add_scalar("Reward", self.training_env.step_wait()[1].mean(), self.n_calls)
+            self.tb_formatter.writer.add_scalar("Reward", self.training_env.step_wait()[1].mean(), self.n_calls)
         # self.reward_list.append(self.training_env.step_wait()[1].mean())
         return True
 
