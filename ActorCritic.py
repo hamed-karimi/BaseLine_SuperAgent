@@ -35,15 +35,15 @@ class ActorCritic(nn.Module):
         # Policy network
         self.policy_net = nn.Sequential(
             nn.Linear(feature_dim, 256), nn.ReLU(),
-            nn.Linear(256, 128), nn.ReLU(),
-            # nn.Linear(184, 128), nn.ReLU(),
+            nn.Linear(256, 184), nn.ReLU(),
+            nn.Linear(184, 128), nn.ReLU(),
             nn.Linear(128, last_layer_dim_pi), nn.ReLU()
         )
         # Value network
         self.value_net = nn.Sequential(
             nn.Linear(feature_dim, 256), nn.ReLU(),
-            nn.Linear(256, 128), nn.ReLU(),
-            # nn.Linear(184, 128), nn.ReLU(),
+            nn.Linear(256, 184), nn.ReLU(),
+            nn.Linear(184, 128), nn.ReLU(),
             nn.Linear(128, last_layer_dim_vf), nn.ReLU()
         )
 
