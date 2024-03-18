@@ -62,8 +62,8 @@ class ActorCritic(nn.Module):
         return self.value_net(features)
 
 
-class Policy(ActorCriticPolicy):
-# class Policy(PPOPolicy):
+# class Policy(ActorCriticPolicy):
+class Policy(PPOPolicy):
     def __init__(
             self,
             observation_space: spaces.Space,
