@@ -45,6 +45,7 @@ class CallBack(BaseCallback):
         self.tb_formatter = next(
             formatter for formatter in output_formats if isinstance(formatter, TensorBoardOutputFormat))
         # pass
+        print('Training starts')
 
     def _on_rollout_start(self) -> None:
         """
