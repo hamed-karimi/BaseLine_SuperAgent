@@ -86,13 +86,13 @@ class Environment(gym.Env):
             step_reward = mental_states_reward - step_length - mental_states_cost
             reward += step_reward
 
-        truncated = False
+        terminated = False
         # be careful about this, we might need to try to have always (or after 5 goal selection step) terminated=False,
         # and just maximize the reward.
         if self._goal_selection_step == self.params.EPISODE_STEPS:
-            terminated = True
+            truncated = True
         else:
-            terminated = False
+            truncated = False
         # (observation, reward, terminated, truncated, info)
         return self._flatten_observation(), reward, terminated, truncated, dict()
 
