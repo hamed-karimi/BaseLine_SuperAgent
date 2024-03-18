@@ -62,8 +62,8 @@ class ActorCritic(nn.Module):
         return self.value_net(features)
 
 
-class Policy(ActorCriticPolicy):
-# class Policy(PPOPolicy):
+# class Policy(ActorCriticPolicy):
+class Policy(PPOPolicy):
     def __init__(
             self,
             observation_space: spaces.Space,
@@ -73,7 +73,7 @@ class Policy(ActorCriticPolicy):
             **kwargs,
     ):
         # Disable orthogonal initialization
-        kwargs["ortho_init"] = False
+        kwargs["ortho_init"] = False  # Don't change this or the whole thing falls apart!!
         super().__init__(
             observation_space,
             action_space,
