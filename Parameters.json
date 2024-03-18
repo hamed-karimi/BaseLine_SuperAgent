@@ -2,7 +2,7 @@
     "HEIGHT" : 8,
     "WIDTH" : 8,
     "OBJECT_TYPE_NUM": 2,
-    "DEVICE": "cpu",
+    "DEVICE": "auto",
     "PROB_EQUAL_PARAMETERS": 0.2,
     "INITIAL_MENTAL_STATES_RANGE": [-15, 10],
     "MENTAL_STATES_SLOPE_RANGE": [1, 1],
