@@ -73,7 +73,7 @@ class Policy(ActorCriticPolicy):
             **kwargs,
     ):
         # Disable orthogonal initialization
-        # kwargs["ortho_init"] = False
+        kwargs["ortho_init"] = False
         super().__init__(
             observation_space,
             action_space,

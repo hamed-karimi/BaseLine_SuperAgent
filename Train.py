@@ -32,9 +32,10 @@ class Train:
         vec_env = make_vec_env(Environment, n_envs=self.params.ENVIRONMENT_NUM,
                                env_kwargs=dict(params=self.params,
                                                few_many_objects=['few', 'many']),
-                               vec_env_cls=DummyVecEnv
+                               # vec_env_cls=DummyVecEnv
                                )
         #SubprocVecEnv
+        vec_env = VecMonitor(vec_env)
         print('after vec_env')
         # vec_env = VecMonitor(venv=vec_env, filename=self.log_dir)
         # "Tried to reset an environment before done. If you want to allow early resets, "
