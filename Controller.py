@@ -40,13 +40,28 @@ class Controller:
 
     def get_node_neighbours(self, x, y):
         neighbours = []
-        loc = np.array([x, y])
-        for action in self.all_actions:
-            if np.all(action == np.array([0, 0])):
-                continue
-            if np.all(loc + action >= 0) and np.all(loc + action < [self.height, self.width]):
-                neighbours.append(loc + action)
-
+        # loc = np.array([x, y])
+        # for action in self.all_actions:
+        #     if np.all(action == np.array([0, 0])):
+        #         continue
+        #     if np.all(loc + action >= 0) and np.all(loc + action < [self.height, self.width]):
+        #         neighbours.append(loc + action)
+        if x - 1 >= 0:
+            neighbours.append([x - 1, y])
+            if y - 1 >= 0:
+                neighbours.append([x - 1, y - 1])
+            if y + 1 < self.width:
+                neighbours.append([x - 1, y + 1])
+        if x + 1 < self.height:
+            neighbours.append([x + 1, y])
+            if y - 1 >= 0:
+                neighbours.append([x + 1, y - 1])
+            if y + 1 < self.width:
+                neighbours.append([x + 1, y + 1])
+        if y - 1 >= 0:
+            neighbours.append([x, y - 1])
+        if y + 1 < self.width:
+            neighbours.append([x, y + 1])
         return neighbours
 
     def get_shortest_path_to_object(self, source, target):

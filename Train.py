@@ -2,9 +2,9 @@ import os.path
 import shutil
 
 import torch
-from stable_baselines3 import A2C #, PPO
+from stable_baselines3 import A2C, PPO
 from stable_baselines3.common.env_util import make_vec_env
-from sbx import PPO
+# from sbx import PPO
 from stable_baselines3.common.vec_env import VecMonitor, SubprocVecEnv, DummyVecEnv
 from FeatureExtractor import FeatureExtractor
 from CallBack import CallBack
