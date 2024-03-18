@@ -53,16 +53,16 @@ class Train:
             features_extractor_kwargs=dict(features_dim=256),
         )
         print('after policy_kwargs')
-        model = PPO(policy=Policy,
+        model = A2C(policy=Policy,
                     env=vec_env,
                     policy_kwargs=policy_kwargs,
                     learning_rate=self.params.INIT_LEARNING_RATE,
-                    batch_size=self.batch_size,
+                    # batch_size=self.batch_size,
                     gamma=self.params.GAMMA,
                     verbose=0,
                     n_steps=self.step_num,
-                    n_epochs=1,
-                    tensorboard_log=None, #'./runs',
+                    # n_epochs=1,
+                    tensorboard_log='./runs',
                     device=self.device)
         print('after model')
         if self.params.PRE_TRAINED_MODEL_VERSION != "":
