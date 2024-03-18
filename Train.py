@@ -35,7 +35,7 @@ class Train:
                                # vec_env_cls=DummyVecEnv
                                )
         #SubprocVecEnv
-        vec_env = VecMonitor(vec_env)
+        # vec_env = VecMonitor(vec_env)
         print('after vec_env')
         # vec_env = VecMonitor(venv=vec_env, filename=self.log_dir)
         # "Tried to reset an environment before done. If you want to allow early resets, "
