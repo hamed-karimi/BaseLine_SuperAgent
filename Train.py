@@ -43,7 +43,7 @@ class Train:
         checkpoint_callback = CheckpointCallback(
             save_freq=self.params.CHECKPOINT_SAVE_FREQUENCY,
             save_path=self.res_folder,
-            name_prefix="A2C",
+            name_prefix="PPO",
             save_replay_buffer=False,
             save_vecnormalize=False
         )
