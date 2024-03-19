@@ -96,7 +96,7 @@ class Environment(gym.Env):
         # else:
         #     truncated = False
         if (self._mental_states > self._death_threshold).any():
-            truncated = True
+            terminated = True
         # (observation, reward, terminated, truncated, info)
         return self._flatten_observation(), reward, terminated, truncated, dict()
 
