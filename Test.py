@@ -10,19 +10,26 @@ from Environment import Environment
 import matplotlib.pyplot as plt
 
 
-def get_predefined_parameters(num_object, param_name):
+def get_predefined_parameters(params, param_name):
     if param_name == 'all_mental_states':
-        all_param = [[-10, -5, 0, 5, 10]] * num_object
+        all_param = [[-10, -5, 0, 5, 10]] * params.OBJECT_TYPE_NUM
     elif param_name == 'all_object_rewards':
         # all_param = [[0, 4, 8, 12, 16, 20]] * num_object
-        all_param = [[0, 8, 12, 20]] * num_object
+        param_range = params.ENVIRONMENT_OBJECT_REWARD_RANGE
+        all_param = np.expand_dims(np.linspace(param_range[0],
+                                               param_range[1], num=min(param_range[1] - param_range[0] + 1, 4),
+                                               dtype=int), axis=0).tolist() * params.OBJECT_TYPE_NUM
     elif param_name == 'all_mental_states_change':
         # all_param = [[0, 1, 2, 3, 4, 5]] * num_object
-        all_param = [[0, 1, 3, 5]] * num_object
+        param_range = params.MENTAL_STATES_SLOPE_RANGE
+        all_param = np.expand_dims(np.linspace(param_range[0],
+                                               param_range[1],
+                                               num=min(param_range[1] - param_range[0] + 1, 4), dtype=int),
+                                   axis=0).tolist() * params.OBJECT_TYPE_NUM
     else:
         print('no such parameters')
         return
-    num_param = len(all_param[0]) ** num_object
+    num_param = len(all_param[0]) ** params.OBJECT_TYPE_NUM
     param_batch = []
     for i, ns in enumerate(itertools.product(*all_param)):
         param_batch.append(list(ns))
@@ -45,9 +52,9 @@ class Test:
         # self.action_mask = np.zeros((self.height, self.width, 1, len(self.all_actions)))
         # self.initialize_action_masks()
 
-        self.all_mental_states = get_predefined_parameters(self.object_type_num, 'all_mental_states')
-        self.all_object_rewards = get_predefined_parameters(self.object_type_num, 'all_object_rewards')
-        self.all_mental_states_change = get_predefined_parameters(self.object_type_num, 'all_mental_states_change')
+        self.all_mental_states = get_predefined_parameters(self.params, 'all_mental_states')
+        self.all_object_rewards = get_predefined_parameters(self.params, 'all_object_rewards')
+        self.all_mental_states_change = get_predefined_parameters(self.params, 'all_mental_states_change')
 
         self.color_options = [[1, 0, .2], [0, .8, .2], [0, 0, 0]]
         self.goal_shape_options = ['*', 's', 'P', 'o', 'D', 'X']
@@ -117,7 +124,8 @@ class Test:
                                 mental_state_slope,
                                 object_reward)
                             env_parameters = [mental_state, mental_state_slope, object_reward]
-                            yield env, flat_env, [i, j], object_locations, each_type_object_num, env_parameters, subplot_id
+                            yield env, flat_env, [i,
+                                                  j], object_locations, each_type_object_num, env_parameters, subplot_id
 
     def get_goal_directed_actions(self):
         fig, ax = None, None
