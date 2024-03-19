@@ -15,7 +15,7 @@ class Environment(gym.Env):
         self.metadata = {"render_modes": None}
         self.object_type_num = params.OBJECT_TYPE_NUM
         self._no_reward_threshold = -5
-        self._death_threshold = 120
+        self._death_threshold = 25
         self._goal_selection_step = 0
         self.cost_of_non_object_location = 100
         self._env_map = np.zeros((1 + self.object_type_num, self.height, self.width), dtype=int)
