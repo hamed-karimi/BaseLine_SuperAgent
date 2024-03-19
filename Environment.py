@@ -15,6 +15,7 @@ class Environment(gym.Env):
         self.metadata = {"render_modes": None}
         self.object_type_num = params.OBJECT_TYPE_NUM
         self._no_reward_threshold = -5
+        self._death_threshold = 120
         self._goal_selection_step = 0
         self.cost_of_non_object_location = 100
         self._env_map = np.zeros((1 + self.object_type_num, self.height, self.width), dtype=int)
@@ -87,12 +88,15 @@ class Environment(gym.Env):
             reward += step_reward
 
         terminated = False
+        truncated = False
         # be careful about this, we might need to try to have always (or after 5 goal selection step) terminated=False,
         # and just maximize the reward.
-        if self._goal_selection_step == self.params.EPISODE_STEPS:
+        # if self._goal_selection_step == self.params.EPISODE_STEPS:
+        #     truncated = True
+        # else:
+        #     truncated = False
+        if (self._mental_states > self._death_threshold).any():
             truncated = True
-        else:
-            truncated = False
         # (observation, reward, terminated, truncated, info)
         return self._flatten_observation(), reward, terminated, truncated, dict()
 
